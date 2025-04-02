@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Post by {{ post.user.username }} - Twitt{% endblock %}
+
+{% block content %}
+<div class="post-detail-container">
+    <div class="post-detail">
+        <div class="post-image">
+            <img src="{{ post.image.url }}" alt="Post by {{ post.user.username }}">
+        </div>
+        
+        <div class="post-info">
+            <div class="post-header">
+                <a href="{% url 'profile' post.user.username %}" class="post-user">
+                    <img src="{{ post.user.profile.profile_pic.url }}" alt="{{ post.user.username }}" class="profile-pic-small">
+                    <span>{{ post.user.username }}</span>
+                </a>
+            </div>
+            
+            <div class="post-comments">
+                <div class="post-caption-detail">
+                    <a href="{% url 'profile' post.user.username %}" class="post-user">
+                        <img src="{{ post.user.profile.profile_pic.url }}" alt="{{ post.user.username }}" class="profile-pic-small">
+                        <span>{{ post.user.username }}</span>
+                    </a>
+                    <p>{{ post.caption }}</p>
+                    <span class="post-time">{{ post.created_at|timesince }} ago</span>
+                </div>
+                
+                <div class="comments-list">
+                    {% for comment in comments %}
+                    <div class="comment">
+                        <a href="{% url 'profile' comment.user.username %}" class="post-user">
+                            <img src="{{ comment.user.profile.profile_pic.url }}" alt="{{ comment.user.username }}" class="profile-pic-small">
+                            <span>{{ comment.user.username }}</span>
+                        </a>
+                        <p>{{ comment.text }}</p>
+                        <span class="comment-time">{{ comment.created_at|timesince }} ago</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="post-actions">
+                <button class="like-btn {% if user in post.likes.all %}liked{% endif %}" data-post-id="{{ post.id }}">
+                    <i class="{% if user in post.likes.all %}fas{% else %}far{% endif %} fa-heart"></i>
+                </button>
+                
+                <button class="comment-focus-btn">
+                    <i class="far fa-comment"></i>
+                </button>
+                
+                <a href="{% url 'new_conversation' post.user.username %}" class="message-btn">
+                    <i class="far fa-paper-plane"></i>
+                </a>
+            </div>
+            
+            <div class="post-likes">
+                <span>{{ post.total_likes }} likes</span>
+            </div>
+            
+            <div class="post-add-comment">
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ comment_form.text }}
+                    <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Like functionality
+        const likeBtn = document.querySelector('.like-btn');
+        
+        likeBtn.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            
+            fetch(`/post/${postId}/like/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                const heartIcon = this.querySelector('i');
+                const likesCount = document.querySelector('.post-likes span');
+                
+                if (data.liked) {
+                    heartIcon.classList.remove('far');
+                    heartIcon.classList.add('fas');
+                    this.classList.add('liked');
+                } else {
+                    heartIcon.classList.remove('fas');
+                    heartIcon.classList.add('far');
+                    this.classList.remove('liked');
+                }
+                
+                likesCount.textContent = `${data.total_likes} likes`;
+            });
+        });
+        
+        // Focus comment input when comment button is clicked
+        const commentFocusBtn = document.querySelector('.comment-focus-btn');
+        const commentInput = document.querySelector('.post-add-comment textarea');
+        
+        commentFocusBtn.addEventListener('click', function() {
+            commentInput.focus();
+        });
+    });
+</script>
+{% endblock %}
+

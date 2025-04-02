@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Twitt{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="stories-container">
+        <div class="stories-scroll">
+            {% if user.is_authenticated %}
+            <div class="story-item add-story">
+                <a href="{% url 'create_story' %}">
+                    <div class="story-avatar">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <span>Add Story</span>
+                </a>
+            </div>
+            {% endif %}
+            
+            {% for story in active_stories %}
+            <div class="story-item">
+                <a href="{% url 'view_story' story.id %}">
+                    <div class="story-avatar">
+                        <img src="{{ story.user.profile.profile_pic.url }}" alt="{{ story.user.username }}">
+                    </div>
+                    <span>{{ story.user.username }}</span>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="posts-container">
+        {% if user.is_authenticated %}
+        <div class="create-post">
+            <a href="{% url 'create_post' %}" class="btn btn-primary">Create New Post</a>
+        </div>
+        {% endif %}
+        
+        {% for post in posts %}
+        <div class="post-card">
+            <div class="post-header">
+                <a href="{% url 'profile' post.user.username %}" class="post-user">
+                    <img src="{{ post.user.profile.profile_pic.url }}" alt="{{ post.user.username }}" class="profile-pic-small">
+                    <span>{{ post.user.username }}</span>
+                </a>
+                <span class="post-time">{{ post.created_at|timesince }} ago</span>
+            </div>
+            
+            <div class="post-image">
+                <img src="{{ post.image.url }}" alt="Post by {{ post.user.username }}">
+            </div>
+            
+            <div class="post-actions">
+                <button class="like-btn {% if user in post.likes.all %}liked{% endif %}" data-post-id="{{ post.id }}">
+                    <i class="{% if user in post.likes.all %}fas{% else %}far{% endif %} fa-heart"></i>
+                    <span class="like-count">{{ post.total_likes }}</span>
+                </button>
+                
+                <a href="{% url 'post_detail' post.id %}" class="comment-btn">
+                    <i class="far fa-comment"></i>
+                    <span>{{ post.total_comments }}</span>
+                </a>
+                
+                <a href="{% url 'new_conversation' post.user.username %}" class="message-btn">
+                    <i class="far fa-paper-plane"></i>
+                </a>
+            </div>
+            
+            <div class="post-caption">
+                <a href="{% url 'profile' post.user.username %}" class="username">{{ post.user.username }}</a>
+                <span>{{ post.caption }}</span>
+            </div>
+            
+            {% if post.comments.all|length > 0 %}
+            <div class="post-comments-preview">
+                <a href="{% url 'post_detail' post.id %}">View all {{ post.total_comments }} comments</a>
+                
+                {% with post.comments.all|slice:":2" as preview_comments %}
+                {% for comment in preview_comments %}
+                <div class="comment-preview">
+                    <a href="{% url 'profile' comment.user.username %}" class="username">{{ comment.user.username }}</a>
+                    <span>{{ comment.text }}</span>
+                </div>
+                {% endfor %}
+                {% endwith %}
+            </div>
+            {% endif %}
+            
+            <div class="post-add-comment">
+                <form action="{% url 'post_detail' post.id %}" method="POST">
+                    {% csrf_token %}
+                    <input type="text" name="text" placeholder="Add a comment..." required>
+                    <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-posts">
+            <p>No posts to show. Follow users or create your own posts!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Like functionality
+        const likeBtns = document.querySelectorAll('.like-btn');
+        
+        likeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const postId = this.dataset.postId;
+                
+                fetch(`/post/${postId}/like/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const heartIcon = this.querySelector('i');
+                    const likeCount = this.querySelector('.like-count');
+                    
+                    if (data.liked) {
+                        heartIcon.classList.remove('far');
+                        heartIcon.classList.add('fas');
+                        this.classList.add('liked');
+                    } else {
+                        heartIcon.classList.remove('fas');
+                        heartIcon.classList.add('far');
+                        this.classList.remove('liked');
+                    }
+                    
+                    likeCount.textContent = data.total_likes;
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}
+

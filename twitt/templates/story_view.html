@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Story - Twitt{% endblock %}
+
+{% block content %}
+<div class="story-view-container">
+    <div class="story-view">
+        <div class="story-header">
+            <div class="story-user">
+                <img src="{{ story.user.profile.profile_pic.url }}" alt="{{ story.user.username }}" class="profile-pic-small">
+                <span>{{ story.user.username }}</span>
+                <span class="story-time">{{ story.created_at|timesince }} ago</span>
+            </div>
+            
+            <a href="{% url 'home' %}" class="close-story">
+                <i class="fas fa-times"></i>
+            </a>
+        </div>
+        
+        <div class="story-content">
+            <div class="story-progress">
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+            </div>
+            
+            <div class="story-image">
+                <img src="{{ story.image.url }}" alt="Story by {{ story.user.username }}">
+            </div>
+            
+            {% if prev_story %}
+            <a href="{% url 'view_story' prev_story.id %}" class="story-nav prev">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+            
+            {% if next_story %}
+            <a href="{% url 'view_story' next_story.id %}" class="story-nav next">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto progress bar
+        const progressBar = document.querySelector('.progress');
+        const storyDuration = 5000; // 5 seconds
+        
+        progressBar.style.transition = `width ${storyDuration}ms linear`;
+        progressBar.style.width = '100%';
+        
+        // Auto navigate to next story
+        {% if next_story %}
+        setTimeout(function() {
+            window.location.href = "{% url 'view_story' next_story.id %}";
+        }, storyDuration);
+        {% else %}
+        setTimeout(function() {
+            window.location.href = "{% url 'home' %}";
+        }, storyDuration);
+        {% endif %}
+    });
+</script>
+{% endblock %}
+

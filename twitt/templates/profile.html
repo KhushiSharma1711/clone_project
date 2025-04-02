@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user_profile.username }} - Twitt{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            <img src="{{ user_profile.profile.profile_pic.url }}" alt="{{ user_profile.username }}">
+        </div>
+        
+        <div class="profile-info">
+            <div class="profile-username">
+                <h1>{{ user_profile.username }}</h1>
+                
+                {% if user.is_authenticated and user != user_profile %}
+                <form action="{% url 'follow_unfollow' user_profile.username %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn {% if is_following %}btn-secondary{% else %}btn-primary{% endif %}">
+                        {% if is_following %}Unfollow{% else %}Follow{% endif %}
+                    </button>
+                </form>
+                
+                <a href="{% url 'new_conversation' user_profile.username %}" class="btn btn-outline">Message</a>
+                {% elif user.is_authenticated and user == user_profile %}
+                <a href="{% url 'edit_profile' %}" class="btn btn-outline">Edit Profile</a>
+                {% endif %}
+            </div>
+            
+            <div class="profile-stats">
+                <div class="stat">
+                    <span class="count">{{ post_count }}</span>
+                    <span class="label">Posts</span>
+                </div>
+                <div class="stat">
+                    <span class="count">{{ user_profile.profile.total_followers }}</span>
+                    <span class="label">Followers</span>
+                </div>
+                <div class="stat">
+                    <span class="count">{{ user_profile.profile.total_following }}</span>
+                    <span class="label">Following</span>
+                </div>
+            </div>
+            
+            <div class="profile-bio">
+                <p>{{ user_profile.profile.bio }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="profile-posts">
+        <div class="posts-grid">
+            {% for post in posts %}
+            <div class="post-grid-item">
+                <a href="{% url 'post_detail' post.id %}">
+                    <img src="{{ post.image.url }}" alt="Post by {{ post.user.username }}">
+                    <div class="post-overlay">
+                        <div class="post-stats">
+                            <span><i class="fas fa-heart"></i> {{ post.total_likes }}</span>
+                            <span><i class="fas fa-comment"></i> {{ post.total_comments }}</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="no-posts">
+                <p>No posts yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Conversation - Twitt{% endblock %}
+
+{% block content %}
+<div class="dm-container">
+    <div class="dm-sidebar">
+        <div class="dm-header">
+            <h2>Messages</h2>
+        </div>
+        
+        <div class="dm-conversations">
+            {% for conv in conversations %}
+            <a href="{% url 'conversation' conv.id %}" class="conversation-item {% if conv.id == conversation.id %}active{% endif %} {% if conv.last_message and not conv.last_message.is_read and conv.last_message.receiver == user %}unread{% endif %}">
+                {% with other_user=conv.participants.exclude.id=user.id.first %}
+                <div class="conversation-avatar">
+                    <img src="{{ other_user.profile.profile_pic.url }}" alt="{{ other_user.username }}">
+                </div>
+                
+                <div class="conversation-info">
+                    <div class="conversation-name">{{ other_user.username }}</div>
+                    
+                    {% if conv.last_message %}
+                    <div class="conversation-last-message">
+                        {% if conv.last_message.sender == user %}
+                        <span class="you">You: </span>
+                        {% endif %}
+                        
+                        {% if conv.last_message.image %}
+                        <span>Sent an image</span>
+                        {% else %}
+                        <span>{{ conv.last_message.content|truncatechars:30 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="conversation-time">
+                        {{ conv.last_message.created_at|timesince }} ago
+                    </div>
+                    {% endif %}
+                </div>
+                {% endwith %}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="dm-content">
+        {% with other_user=conversation.participants.exclude.id=user.id.first %}
+        <div class="conversation-header">
+            <a href="{% url 'profile' other_user.username %}" class="conversation-user">
+                <img src="{{ other_user.profile.profile_pic.url }}" alt="{{ other_user.username }}" class="profile-pic-small">
+                <span>{{ other_user.username }}</span>
+            </a>
+        </div>
+        
+        <div class="conversation-messages">
+            {% for message in messages_list %}
+            <div class="message {% if message.sender == user %}sent{% else %}received{% endif %}">
+                {% if message.image %}
+                <div class="message-image">
+                    <img src="{{ message.image.url }}" alt="Message image">
+                </div>
+                {% endif %}
+                
+                {% if message.content %}
+                <div class="message-content">
+                    {{ message.content }}
+                </div>
+                {% endif %}
+                
+                <div class="message-time">
+                    {{ message.created_at|time:"H:i" }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="conversation-input">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="message-input-container">
+                    {{ form.content }}
+                    
+                    <label for="{{ form.image.id_for_label }}" class="image-upload-label">
+                        <i class="far fa-image"></i>
+                    </label>
+                    {{ form.image }}
+                    
+                    <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </form>
+        </div>
+        {% endwith %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Scroll to bottom of messages
+        const messagesContainer = document.querySelector('.conversation-messages');
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Show image preview when selected
+        const imageInput = document.querySelector('#{{ form.image.id_for_label }}');
+        const messageInputContainer = document.querySelector('.message-input-container');
+        
+        imageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Remove any existing preview
+                    const existingPreview = document.querySelector('.image-preview');
+                    if (existingPreview) {
+                        existingPreview.remove();
+                    }
+                    
+                    // Create preview element
+                    const preview = document.createElement('div');
+                    preview.classList.add('image-preview');
+                    
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.classList.add('remove-image');
+                    removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    removeBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        preview.remove();
+                        imageInput.value = '';
+                    });
+                    
+                    preview.appendChild(img);
+                    preview.appendChild(removeBtn);
+                    
+                    messageInputContainer.insertBefore(preview, messageInputContainer.firstChild);
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
+{% endblock %}
+

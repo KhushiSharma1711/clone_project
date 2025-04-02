@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Direct Messages - Twitt{% endblock %}
+
+{% block content %}
+<div class="dm-container">
+    <div class="dm-sidebar">
+        <div class="dm-header">
+            <h2>Messages</h2>
+        </div>
+        
+        <div class="dm-conversations">
+            {% for conversation in conversations %}
+            <a href="{% url 'conversation' conversation.id %}" class="conversation-item {% if conversation.last_message and not conversation.last_message.is_read and conversation.last_message.receiver == user %}unread{% endif %}">
+                {% with other_user=conversation.participants.exclude.id=user.id.first %}
+                <div class="conversation-avatar">
+                    <img src="{{ other_user.profile.profile_pic.url }}" alt="{{ other_user.username }}">
+                </div>
+                
+                <div class="conversation-info">
+                    <div class="conversation-name">{{ other_user.username }}</div>
+                    
+                    {% if conversation.last_message %}
+                    <div class="conversation-last-message">
+                        {% if conversation.last_message.sender == user %}
+                        <span class="you">You: </span>
+                        {% endif %}
+                        
+                        {% if conversation.last_message.image %}
+                        <span>Sent an image</span>
+                        {% else %}
+                        <span>{{ conversation.last_message.content|truncatechars:30 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="conversation-time">
+                        {{ conversation.last_message.created_at|timesince }} ago
+                    </div>
+                    {% endif %}
+                </div>
+                {% endwith %}
+            </a>
+            {% empty %}
+            <div class="no-conversations">
+                <p>No conversations yet.</p>
+                <p>Search for users to start a conversation.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="dm-content">
+        <div class="dm-placeholder">
+            <div class="dm-placeholder-icon">
+                <i class="far fa-paper-plane"></i>
+            </div>
+            <h2>Your Messages</h2>
+            <p>Send private messages to a friend or group.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

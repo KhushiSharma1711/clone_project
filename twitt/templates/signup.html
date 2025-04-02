@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Twitt{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-form">
+        <h1>Join Twitt</h1>
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <div class="error-message">
+                    {% for error in field.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+        
+        <div class="social-auth">
+            <p>Or register with:</p>
+            <a href="{% url 'socialaccount_login' 'google' %}" class="btn btn-google">
+                <i class="fab fa-google"></i> Google
+            </a>
+        </div>
+        
+        <div class="auth-links">
+            <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
