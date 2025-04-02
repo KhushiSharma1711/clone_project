@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - Twitt{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h1>Edit Profile</h1>
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ u_form.username.id_for_label }}">Username</label>
+                {{ u_form.username }}
+                {% if u_form.username.errors %}
+                <div class="error-message">
+                    {% for error in u_form.username.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ u_form.email.id_for_label }}">Email</label>
+                {{ u_form.email }}
+                {% if u_form.email.errors %}
+                <div class="error-message">
+                    {% for error in u_form.email.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ p_form.bio.id_for_label }}">Bio</label>
+                {{ p_form.bio }}
+                {% if p_form.bio.errors %}
+                <div class="error-message">
+                    {% for error in p_form.bio.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ p_form.profile_pic.id_for_label }}">Profile Picture</label>
+                {{ p_form.profile_pic }}
+                {% if p_form.profile_pic.errors %}
+                <div class="error-message">
+                    {% for error in p_form.profile_pic.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="image-preview">
+                    {% if user.profile.profile_pic %}
+                    <img src="{{ user.profile.profile_pic.url }}" alt="Current profile picture">
+                    {% endif %}
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

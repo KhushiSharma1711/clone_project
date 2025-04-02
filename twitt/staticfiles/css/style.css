@@ -1027,38 +1027,6 @@
     color: var(--text-secondary);
   }
   
-  /* Form Container */
-  .form-container {
-    background-color: var(--white);
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    padding: 30px;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  
-  .form-container h1 {
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  .form-info {
-    margin: 15px 0;
-    color: var(--text-secondary);
-    font-size: 14px;
-    text-align: center;
-  }
-  
-  .image-preview {
-    margin-top: 10px;
-  }
-  
-  .image-preview img {
-    max-width: 100%;
-    max-height: 300px;
-    border-radius: 5px;
-  }
-  
   /* Responsive */
   @media (max-width: 935px) {
     .profile-header {

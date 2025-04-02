@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Story - Twitt{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h1>Create New Story</h1>
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.image.id_for_label }}">Image</label>
+                {{ form.image }}
+                {% if form.image.errors %}
+                <div class="error-message">
+                    {% for error in form.image.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="image-preview"></div>
+            </div>
+            
+            <p class="form-info">Your story will be visible for 24 hours.</p>
+            
+            <button type="submit" class="btn btn-primary">Post Story</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
