@@ -12,13 +12,12 @@
         <div class="dm-conversations">
             {% for conv in conversations %}
             <a href="{% url 'conversation' conv.id %}" class="conversation-item {% if conv.id == conversation.id %}active{% endif %} {% if conv.last_message and not conv.last_message.is_read and conv.last_message.receiver == user %}unread{% endif %}">
-                {% with other_user=conv.participants.exclude.id=user.id.first %}
                 <div class="conversation-avatar">
-                    <img src="{{ other_user.profile.profile_pic.url }}" alt="{{ other_user.username }}">
+                    <img src="{{ conv.other_user.profile.profile_pic.url }}" alt="{{ conv.other_user.username }}">
                 </div>
                 
                 <div class="conversation-info">
-                    <div class="conversation-name">{{ other_user.username }}</div>
+                    <div class="conversation-name">{{ conv.other_user.username }}</div>
                     
                     {% if conv.last_message %}
                     <div class="conversation-last-message">
@@ -38,18 +37,16 @@
                     </div>
                     {% endif %}
                 </div>
-                {% endwith %}
             </a>
             {% endfor %}
         </div>
     </div>
     
     <div class="dm-content">
-        {% with other_user=conversation.participants.exclude.id=user.id.first %}
         <div class="conversation-header">
-            <a href="{% url 'profile' other_user.username %}" class="conversation-user">
-                <img src="{{ other_user.profile.profile_pic.url }}" alt="{{ other_user.username }}" class="profile-pic-small">
-                <span>{{ other_user.username }}</span>
+            <a href="{% url 'profile' conversation.other_user.username %}" class="conversation-user">
+                <img src="{{ conversation.other_user.profile.profile_pic.url }}" alt="{{ conversation.other_user.username }}" class="profile-pic-small">
+                <span>{{ conversation.other_user.username }}</span>
             </a>
         </div>
         
@@ -90,7 +87,6 @@
                 </div>
             </form>
         </div>
-        {% endwith %}
     </div>
 </div>
 {% endblock %}

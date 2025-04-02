@@ -197,6 +197,10 @@ def inbox(request):
     # Get all conversations where the current user is a participant
     conversations = Conversation.objects.filter(participants=request.user)
     
+    # Add other_user to each conversation
+    for conversation in conversations:
+        conversation.other_user = conversation.participants.exclude(id=request.user.id).first()
+    
     context = {
         'conversations': conversations,
     }
@@ -205,6 +209,15 @@ def inbox(request):
 @login_required
 def conversation(request, conversation_id):
     conversation = get_object_or_404(Conversation, id=conversation_id, participants=request.user)
+    
+    # Add other_user to the conversation
+    conversation.other_user = conversation.participants.exclude(id=request.user.id).first()
+    
+    # Get all conversations for the sidebar
+    all_conversations = Conversation.objects.filter(participants=request.user)
+    for conv in all_conversations:
+        conv.other_user = conv.participants.exclude(id=request.user.id).first()
+    
     messages_list = DirectMessage.objects.filter(
         Q(sender__in=conversation.participants.all(), receiver=request.user) | 
         Q(sender=request.user, receiver__in=conversation.participants.all())
@@ -222,8 +235,8 @@ def conversation(request, conversation_id):
             message = form.save(commit=False)
             message.sender = request.user
             
-            # Get the other participant (assuming 2 participants per conversation)
-            receiver = conversation.participants.exclude(id=request.user.id).first()
+            # Get the other participant
+            receiver = conversation.other_user
             message.receiver = receiver
             message.save()
             
@@ -237,6 +250,7 @@ def conversation(request, conversation_id):
     
     context = {
         'conversation': conversation,
+        'conversations': all_conversations,
         'messages_list': messages_list,
         'form': form,
     }

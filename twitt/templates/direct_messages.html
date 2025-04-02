@@ -12,13 +12,12 @@
         <div class="dm-conversations">
             {% for conversation in conversations %}
             <a href="{% url 'conversation' conversation.id %}" class="conversation-item {% if conversation.last_message and not conversation.last_message.is_read and conversation.last_message.receiver == user %}unread{% endif %}">
-                {% with other_user=conversation.participants.exclude.id=user.id.first %}
                 <div class="conversation-avatar">
-                    <img src="{{ other_user.profile.profile_pic.url }}" alt="{{ other_user.username }}">
+                    <img src="{{ conversation.other_user.profile.profile_pic.url }}" alt="{{ conversation.other_user.username }}">
                 </div>
                 
                 <div class="conversation-info">
-                    <div class="conversation-name">{{ other_user.username }}</div>
+                    <div class="conversation-name">{{ conversation.other_user.username }}</div>
                     
                     {% if conversation.last_message %}
                     <div class="conversation-last-message">
@@ -38,7 +37,6 @@
                     </div>
                     {% endif %}
                 </div>
-                {% endwith %}
             </a>
             {% empty %}
             <div class="no-conversations">

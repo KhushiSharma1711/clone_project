@@ -143,3 +143,5 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+ACCOUNT_LOGOUT_ON_GET = True  # This allows logout without requiring POST
+
