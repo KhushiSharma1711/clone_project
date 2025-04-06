@@ -1,14 +1,15 @@
 /* Base Styles */
 :root {
-  --primary-color: #0095f6;
-  --secondary-color: #00376b;
+  --primary-color: #000000; /* Changed to black as requested */
+  --secondary-color: #0066cc; /* Changed to blue as requested */
   --background-color: #fafafa;
   --border-color: #dbdbdb;
-  --text-color: #262626;
+  --text-color: #0066cc; /* Changed to blue as requested */
   --text-secondary: #8e8e8e;
   --success-color: #2ecc71;
   --error-color: #e74c3c;
   --white: #ffffff;
+  --hover-color: #ffffff; /* Added white hover color as requested */
 }
 
 * {
@@ -41,7 +42,7 @@ img {
 }
 
 header {
-  background-color: var(--white);
+  background-color: var(--primary-color); /* Changed to black */
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
@@ -59,6 +60,8 @@ footer {
   color: var(--text-secondary);
   font-size: 12px;
   border-top: 1px solid var(--border-color);
+  background-color: var(--primary-color); /* Changed to black */
+  color: var(--white); /* Changed to white for better contrast */
 }
 
 /* Navbar */
@@ -77,7 +80,7 @@ footer {
 }
 
 .navbar-brand a {
-  color: var(--text-color);
+  color: var(--white); /* Changed for better contrast on black background */
 }
 
 .navbar-menu {
@@ -88,11 +91,19 @@ footer {
 
 .nav-item {
   font-size: 16px;
-  color: var(--text-color);
+  color: var(--white); /* Changed for better contrast on black background */
 }
 
 .nav-item i {
   font-size: 24px;
+}
+
+.nav-item:hover {
+  color: var(--hover-color); /* Added hover effect */
+}
+
+.logout-btn:hover {
+  color: var(--hover-color); /* Added hover effect */
 }
 
 .search-bar {
@@ -122,6 +133,10 @@ footer {
   border: none;
   cursor: pointer;
   color: var(--text-secondary);
+}
+
+.search-bar button:hover {
+  color: var(--hover-color); /* Added hover effect */
 }
 
 .profile-pic-small {
@@ -203,7 +218,7 @@ footer {
   cursor: pointer;
   text-align: center;
   border: none;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .btn-primary {
@@ -213,6 +228,7 @@ footer {
 
 .btn-primary:hover {
   background-color: var(--secondary-color);
+  color: var(--hover-color);
 }
 
 .btn-secondary {
@@ -221,7 +237,8 @@ footer {
 }
 
 .btn-secondary:hover {
-  background-color: #dbdbdb;
+  background-color: var(--secondary-color);
+  color: var(--hover-color);
 }
 
 .btn-outline {
@@ -231,7 +248,8 @@ footer {
 }
 
 .btn-outline:hover {
-  background-color: #f5f5f5;
+  background-color: var(--secondary-color);
+  color: var(--hover-color);
 }
 
 .btn-google {
@@ -241,6 +259,7 @@ footer {
 
 .btn-google:hover {
   background-color: #3367d6;
+  color: var(--hover-color);
 }
 
 /* Authentication */
@@ -263,6 +282,7 @@ footer {
 .auth-form h1 {
   text-align: center;
   margin-bottom: 30px;
+  color: var(--primary-color);
 }
 
 .auth-form .btn {
@@ -282,7 +302,13 @@ footer {
 }
 
 .auth-links a {
-  color: var(--primary-color);
+  color: var(--secondary-color);
+}
+
+.logout-message {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--text-color);
 }
 
 /* Stories */
@@ -311,7 +337,7 @@ footer {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   padding: 2px;
   display: flex;
   justify-content: center;
@@ -367,17 +393,24 @@ footer {
   align-items: center;
   padding: 10px 15px;
   border-bottom: 1px solid var(--border-color);
+  background-color: var(--primary-color);
+  color: var(--white);
 }
 
 .post-user {
   display: flex;
   align-items: center;
   gap: 10px;
+  color: var(--white);
+}
+
+.post-user span {
+  color: var(--white);
 }
 
 .post-time {
   font-size: 12px;
-  color: var(--text-secondary);
+  color: var(--white);
 }
 
 .post-image img {
@@ -391,6 +424,7 @@ footer {
   align-items: center;
   padding: 10px 15px;
   gap: 15px;
+  background-color: var(--primary-color);
 }
 
 .like-btn,
@@ -400,10 +434,16 @@ footer {
   border: none;
   cursor: pointer;
   font-size: 24px;
-  color: var(--text-color);
+  color: var(--white);
   display: flex;
   align-items: center;
   gap: 5px;
+}
+
+.like-btn:hover,
+.comment-btn:hover,
+.message-btn:hover {
+  color: var(--hover-color);
 }
 
 .like-btn.liked i {
@@ -411,17 +451,20 @@ footer {
 }
 
 .post-caption {
-  padding: 0 15px 10px;
+  padding: 10px 15px;
+  background-color: var(--white);
 }
 
 .post-caption .username {
   font-weight: 600;
   margin-right: 5px;
+  color: var(--primary-color);
 }
 
 .post-comments-preview {
   padding: 0 15px 10px;
   border-bottom: 1px solid var(--border-color);
+  background-color: var(--white);
 }
 
 .post-comments-preview a {
@@ -438,10 +481,12 @@ footer {
 .comment-preview .username {
   font-weight: 600;
   margin-right: 5px;
+  color: var(--primary-color);
 }
 
 .post-add-comment {
   padding: 10px 15px;
+  background-color: var(--white);
 }
 
 .post-add-comment form {
@@ -460,8 +505,12 @@ footer {
   background: transparent;
   border: none;
   cursor: pointer;
-  color: var(--primary-color);
+  color: var(--secondary-color);
   font-weight: 600;
+}
+
+.post-add-comment button:hover {
+  color: var(--primary-color);
 }
 
 /* Profile */
@@ -475,6 +524,9 @@ footer {
   display: flex;
   gap: 30px;
   margin-bottom: 40px;
+  background-color: var(--white);
+  padding: 20px;
+  border-radius: 5px;
 }
 
 .profile-avatar {
@@ -487,6 +539,7 @@ footer {
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
+  border: 3px solid var(--primary-color);
 }
 
 .profile-info {
@@ -503,6 +556,7 @@ footer {
 .profile-username h1 {
   font-size: 28px;
   font-weight: 300;
+  color: var(--primary-color);
 }
 
 .profile-stats {
@@ -513,6 +567,7 @@ footer {
 
 .stat .count {
   font-weight: 600;
+  color: var(--primary-color);
 }
 
 .profile-bio {
@@ -614,10 +669,12 @@ footer {
 .post-caption-detail {
   padding: 15px;
   border-bottom: 1px solid var(--border-color);
+  background-color: var(--white);
 }
 
 .comments-list {
   padding: 15px;
+  background-color: var(--white);
 }
 
 .comment {
@@ -633,6 +690,8 @@ footer {
 .post-likes {
   padding: 15px;
   font-weight: 600;
+  background-color: var(--white);
+  color: var(--primary-color);
 }
 
 /* Direct Messages */
@@ -658,6 +717,8 @@ footer {
   padding: 15px;
   border-bottom: 1px solid var(--border-color);
   text-align: center;
+  background-color: var(--primary-color);
+  color: var(--white);
 }
 
 .dm-conversations {
@@ -693,6 +754,7 @@ footer {
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid var(--primary-color);
 }
 
 .conversation-info {
@@ -701,7 +763,7 @@ footer {
 
 .conversation-name {
   font-weight: 600;
-  margin-bottom: 5px;
+  color: var(--primary-color);
 }
 
 .conversation-last-message {
@@ -739,11 +801,14 @@ footer {
 .dm-placeholder-icon {
   font-size: 48px;
   margin-bottom: 20px;
+  color: var(--primary-color);
 }
 
 .conversation-header {
   padding: 15px;
   border-bottom: 1px solid var(--border-color);
+  background-color: var(--primary-color);
+  color: var(--white);
 }
 
 .conversation-user {
@@ -759,6 +824,7 @@ footer {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  background-color: var(--white);
 }
 
 .message {
@@ -770,7 +836,8 @@ footer {
 
 .message.sent {
   align-self: flex-end;
-  background-color: #efefef;
+  background-color: var(--secondary-color);
+  color: var(--white);
 }
 
 .message.received {
@@ -797,6 +864,7 @@ footer {
 .conversation-input {
   padding: 15px;
   border-top: 1px solid var(--border-color);
+  background-color: var(--white);
 }
 
 .message-input-container {
@@ -819,7 +887,11 @@ footer {
 
 .image-upload-label {
   cursor: pointer;
-  color: var(--text-secondary);
+  color: var(--secondary-color);
+}
+
+.image-upload-label:hover {
+  color: var(--primary-color);
 }
 
 .message-input-container input[type="file"] {
@@ -830,6 +902,10 @@ footer {
   background: transparent;
   border: none;
   cursor: pointer;
+  color: var(--secondary-color);
+}
+
+.message-input-container button:hover {
   color: var(--primary-color);
 }
 
@@ -851,7 +927,7 @@ footer {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background-color: var(--text-color);
+  background-color: var(--primary-color);
   color: var(--white);
   border: none;
   cursor: pointer;
@@ -993,6 +1069,7 @@ footer {
   margin-bottom: 15px;
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 10px;
+  color: var(--primary-color);
 }
 
 .users-results {
@@ -1021,6 +1098,7 @@ footer {
 
 .user-info .username {
   font-weight: 600;
+  color: var(--primary-color);
 }
 
 .user-info .name {
@@ -1040,6 +1118,7 @@ footer {
 .form-container h1 {
   margin-bottom: 20px;
   text-align: center;
+  color: var(--primary-color);
 }
 
 .form-info {

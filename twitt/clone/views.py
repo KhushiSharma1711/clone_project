@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.utils import timezone
 from django.db.models import Q
+from django.views.decorators.http import require_POST
 from .models import Profile, Post, Comment, Story, DirectMessage, Conversation
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, PostForm, CommentForm, StoryForm, MessageForm
 
@@ -81,22 +82,44 @@ def edit_profile(request):
     return render(request, 'edit_profile.html', context)
 
 @login_required
+@require_POST
 def follow_unfollow(request, username):
     user_to_follow = get_object_or_404(User, username=username)
     
     if user_to_follow == request.user:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'error', 'message': 'You cannot follow yourself.'})
         messages.warning(request, 'You cannot follow yourself.')
         return redirect('profile', username=username)
     
-    if request.user in user_to_follow.profile.followers.all():
+    is_following = request.user in user_to_follow.profile.followers.all()
+    
+    if is_following:
         # Unfollow
         user_to_follow.profile.followers.remove(request.user)
-        messages.success(request, f'You have unfollowed {username}.')
+        is_now_following = False
+        message = f'You have unfollowed {username}.'
     else:
         # Follow
         user_to_follow.profile.followers.add(request.user)
-        messages.success(request, f'You are now following {username}.')
+        is_now_following = True
+        message = f'You are now following {username}.'
     
+    # Get updated counts
+    followers_count = user_to_follow.profile.total_followers()
+    following_count = user_to_follow.profile.total_following()
+    
+    # Check if it's an AJAX request
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'status': 'success',
+            'is_following': is_now_following,
+            'followers_count': followers_count,
+            'following_count': following_count,
+            'message': message
+        })
+    
+    messages.success(request, message)
     return redirect('profile', username=username)
 
 @login_required

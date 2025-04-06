@@ -121,7 +121,7 @@ AUTHENTICATION_BACKENDS = [
 SITE_ID = 1
 
 LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'login'
+LOGOUT_REDIRECT_URL = 'login'  # This will be overridden by the template_name in the LogoutView
 
 # Django AllAuth settings
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
@@ -129,6 +129,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'  # Set to 'mandatory' in production
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 ACCOUNT_USERNAME_MIN_LENGTH = 4
+ACCOUNT_LOGOUT_ON_GET = True  # This allows logout without requiring POST
 
 # Social account providers
 SOCIALACCOUNT_PROVIDERS = {
@@ -142,6 +143,4 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
-
-ACCOUNT_LOGOUT_ON_GET = True  # This allows logout without requiring POST
 
