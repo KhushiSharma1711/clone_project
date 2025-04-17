@@ -5,9 +5,15 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.utils import timezone
 from django.db.models import Q
-from django.views.decorators.http import require_POST
+from django.contrib.auth import logout
 from .models import Profile, Post, Comment, Story, DirectMessage, Conversation
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, PostForm, CommentForm, StoryForm, MessageForm
+
+# Add this new custom logout view
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'You have been successfully logged out.')
+    return redirect('login')
 
 def register(request):
     if request.method == 'POST':
@@ -24,7 +30,7 @@ def register(request):
 @login_required
 def home(request):
     # Get users that the current user follows
-    following_users = User.objects.filter(following__user=request.user)
+    following_users = User.objects.filter(profile__followers=request.user)
     
     # Get posts from users that the current user follows and the current user's posts
     posts = Post.objects.filter(
@@ -82,44 +88,42 @@ def edit_profile(request):
     return render(request, 'edit_profile.html', context)
 
 @login_required
-@require_POST
 def follow_unfollow(request, username):
     user_to_follow = get_object_or_404(User, username=username)
     
     if user_to_follow == request.user:
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({'status': 'error', 'message': 'You cannot follow yourself.'})
         messages.warning(request, 'You cannot follow yourself.')
         return redirect('profile', username=username)
     
-    is_following = request.user in user_to_follow.profile.followers.all()
+    # Check if already following
+    is_following = user_to_follow.profile.followers.filter(id=request.user.id).exists()
     
     if is_following:
         # Unfollow
         user_to_follow.profile.followers.remove(request.user)
+        action = 'unfollowed'
         is_now_following = False
-        message = f'You have unfollowed {username}.'
     else:
         # Follow
         user_to_follow.profile.followers.add(request.user)
+        action = 'followed'
         is_now_following = True
-        message = f'You are now following {username}.'
     
     # Get updated counts
-    followers_count = user_to_follow.profile.total_followers()
-    following_count = user_to_follow.profile.total_following()
+    target_followers_count = user_to_follow.profile.followers.count()
+    current_user_following_count = Profile.objects.filter(followers=request.user).count()
     
     # Check if it's an AJAX request
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({
             'status': 'success',
             'is_following': is_now_following,
-            'followers_count': followers_count,
-            'following_count': following_count,
-            'message': message
+            'target_followers_count': target_followers_count,
+            'current_user_following_count': current_user_following_count,
+            'message': f'You have {action} {username}.'
         })
     
-    messages.success(request, message)
+    messages.success(request, f'You have {action} {username}.')
     return redirect('profile', username=username)
 
 @login_required

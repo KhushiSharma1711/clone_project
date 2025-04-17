@@ -44,10 +44,17 @@
     
     <div class="dm-content">
         <div class="conversation-header">
-            <a href="{% url 'profile' conversation.other_user.username %}" class="conversation-user">
-                <img src="{{ conversation.other_user.profile.profile_pic.url }}" alt="{{ conversation.other_user.username }}" class="profile-pic-small">
-                <span>{{ conversation.other_user.username }}</span>
-            </a>
+            {% if conversation.other_user.username %}
+                <a href="{% url 'profile' conversation.other_user.username %}" class="conversation-user">
+                    <img src="{{ conversation.other_user.profile.profile_pic.url }}" alt="{{ conversation.other_user.username }}" class="profile-pic-small">
+                    <span>{{ conversation.other_user.username }}</span>
+                </a>
+            {% else %}
+                <a href="{% url 'profile' 'guest' %}" class="conversation-user">
+                    <img src="{{ conversation.other_user.profile.profile_pic.url }}" alt="Guest User" class="profile-pic-small">
+                    <span>Guest User</span>
+                </a>
+            {% endif %}
         </div>
         
         <div class="conversation-messages">
@@ -143,4 +150,3 @@
     });
 </script>
 {% endblock %}
-

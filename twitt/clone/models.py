@@ -16,7 +16,8 @@ class Profile(models.Model):
         return self.followers.count()
     
     def total_following(self):
-        return User.objects.filter(following__user=self.user).count()
+        # Count how many users this user is following
+        return Profile.objects.filter(followers=self.user).count()
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
